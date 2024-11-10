@@ -1,0 +1,35 @@
+# OpenFOAM run directories
+[0-9]*/
+[0-9]*.[0-9]*/
+!0/
+
+# OpenFOAM mesh files
+*/polyMesh/*
+!*/polyMesh/blockMeshDict
+
+# OpenFOAM parallel processing directories
+processor*/
+
+# Log files
+log.*
+*.log
+
+# ParaView files
+*.OpenFOAM
+*.foam
+
+# Build directories
+linux*/
+lnInclude/
+dynamicCode/
+
+# Visual Studio Code
+.vscode/
+*.code-workspace
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*~
