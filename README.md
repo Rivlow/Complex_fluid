@@ -90,53 +90,22 @@ export PETSC_ARCH=arch-linux-c-opt
 export LD_LIBRARY_PATH=$PETSC_DIR/$PETSC_ARCH/lib:$LD_LIBRARY_PATH
 
 # Compile rheoTool
-cd ~/OpenFOAM/fantaluca-9/applications/rheoTool/of90
+cd ~/OpenFOAM/fantaluca-9/applications/rheoTool/of90/src
 ./Allwmake
 ```
 
 ## 5. Running Simulations
 
-Create a script (`run_ptt_simulation.sh`) to automate the simulation process:
-
+Simply run the present bash file
 ```bash
-#!/bin/bash
-
-# Paths definition
-FOAM_DIR=/opt/openfoam9
-USER_DIR=$HOME/OpenFOAM/fantaluca-9
-RHEOTOOL_DIR=$USER_DIR/applications/rheoTool/of90
-CASE_NAME=PTT_test
-TARGET_DIR="$PWD/$CASE_NAME"
-
-# Source OpenFOAM
-source $FOAM_DIR/etc/bashrc
-
-# Configure PETSc
-export PETSC_DIR=$USER_DIR/ThirdParty/petsc-3.16.5
-export PETSC_ARCH=arch-linux-c-opt
-export LD_LIBRARY_PATH=$PETSC_DIR/$PETSC_ARCH/lib:$LD_LIBRARY_PATH
-
-# Create case directory and copy files
-mkdir -p "$TARGET_DIR"
-cp -r $RHEOTOOL_DIR/tutorials/rheoFoam/CrossSlot/PTTLog/* "$TARGET_DIR/"
-
-# Run simulation
-cd "$TARGET_DIR"
-chmod +x ./Allclean ./Allrun
-./Allclean
-./Allrun
-```
-
-Make the script executable and run it:
-```bash
-chmod +x run_ptt_simulation.sh
-./run_ptt_simulation.sh
+chmod +x run_simulation.sh
+./run_simulation.sh
 ```
 
 ## 6. Visualizing Results
 
 To visualize the results:
-```bash
+´´´bash
 cd PTT_test
 paraFoam
 ```
