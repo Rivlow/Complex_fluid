@@ -1,3 +1,6 @@
+# Synopsis
+In the framework of the ULiege course [PHYS3133](https://www.programmes.uliege.be/cocoon/20232024/en/cours/PHYS3133-1.html), this project focuses on analyzing the behavior of complex fluids. Specifically, we investigate non-Newtonian fluids using the PTT (Phan-Thien-Tanner) model implemented through OpenFOAM solver and rheoTool library.
+
 # Installation Guide for OpenFOAM 9 with rheoTool
 
 This guide details the step-by-step process to install OpenFOAM 9 with rheoTool on Ubuntu/WSL.
