@@ -1,147 +1,94 @@
 # Synopsis
-In the framework of the ULiege course [PHYS3133](https://www.programmes.uliege.be/cocoon/20232024/en/cours/PHYS3133-1.html), this project focuses on analyzing the behavior of complex fluids. Specifically, we investigate non-Newtonian fluids using the PTT (Phan-Thien-Tanner) model implemented through OpenFOAM solver and rheoTool library.
 
-# Installation Guide for OpenFOAM 9 with rheoTool
+In the framework of the ULiege course [PHYS3133](https://www.programmes.uliege.be/cocoon/20232024/en/cours/PHYS3133-1.html), this project focuses on analyzing the behavior of complex fluids. Specifically, we investigate non-Newtonian fluids using OpenFOAM simulations with a focus on channel flow with multiple obstacles.
 
-This guide details the step-by-step process to install OpenFOAM 9 with rheoTool on Ubuntu/WSL.
+# Environment Setup
 
-## Prerequisites
+The project now uses Docker with OpenFOAM-extend v5.0 for a more streamlined setup process. This eliminates the need for manual installation of OpenFOAM and its dependencies.
 
-First, install the required dependencies:
-```bash
-sudo apt-get update
-sudo apt-get install build-essential cmake flex libfl-dev bison zlib1g-dev \
-    libboost-system-dev libboost-thread-dev libopenmpi-dev openmpi-bin \
-    gnuplot libreadline-dev libncurses-dev libxt-dev qt5-default \
-    libsm-dev libxext-dev libxrender-dev g++ gfortran gcc
+## Project Structure
+
+```
+.
+├── .devContainer
+├── .vscode
+├── openfoam_data
+│   ├── simulation
+│   │   └── fene_p
+│   │       ├── four_obstacle
+│   │       │   ├── 0
+│   │       │   ├── constant
+│   │       │   ├── system
+│   │       │   │   ├── blockMeshDict
+│   │       │   │   ├── controlDict
+│   │       │   │   ├── decomposeParDict
+│   │       │   │   ├── fvSchemes
+│   │       │   │   ├── fvSolution
+│   │       │   │   └── sampleDict
+│   │       ├── single_obstacle
+│   │       └── incompressible
+├── Dockerfile
+├── generator_mesh.py
+├── run_foam.sh
+└── tutorials_tree.txt
 ```
 
-## 1. Install OpenFOAM 9
+## Geometry Configuration
 
-Add OpenFOAM repository and install OpenFOAM 9:
-```bash
-# Add OpenFOAM repository
-curl -s https://dl.openfoam.com/add-debian-repo.sh | sudo bash
+The simulation uses a configurable channel geometry with three obstacles. The geometry parameters can be modified using the `generator_mesh.py` script, which allows customization of:
 
-# Update and install OpenFOAM 9
-sudo apt-get update
-sudo apt-get install openfoam9
-```
+- Inlet length
+- Obstacle width
+- Obstacle spacing
+- Channel height
+- Channel depth
 
-### Configure OpenFOAM environment
-Add OpenFOAM to your bashrc:
-```bash
-echo ". /opt/openfoam9/etc/bashrc" >> ~/.bashrc
-source /opt/openfoam9/etc/bashrc
-```
+The script automatically updates the `blockMeshDict` file with the new parameters.
 
-## 2. Install rheoTool
+## Running Simulations
 
-Create the necessary directories:
-```bash
-mkdir -p ~/OpenFOAM/fantaluca-9/applications
-cd ~/OpenFOAM/fantaluca-9/applications
-```
+1. Ensure you are in the Docker container environment
+2. Navigate to the simulation directory:
+   ```bash
+   cd openfoam_data
+   ```
+3. Make the run script executable:
+   ```bash
+   chmod +x run_foam.sh
+   ```
+4. Execute the simulation:
+   ```bash
+   ./run_foam.sh
+   ```
 
-### Clone and prepare rheoTool
-```bash
-# Clone rheoTool (replace with your actual rheoTool acquisition method)
-cp -r /path/to/rheoTool ~/OpenFOAM/fantaluca-9/applications/
-```
+The run script handles:
+- Environment setup
+- Progress monitoring with percentage completion
+- Automatic cleanup of previous results
+- VTK conversion for post-processing
+- Error handling and status reporting
 
-## 3. Install and Configure PETSc
+## Directory Structure
 
-### Set up PETSc:
-```bash
-cd ~/OpenFOAM/fantaluca-9/ThirdParty
-# Download and extract PETSc 3.16.5 (if not already present)
+Each simulation case contains:
 
-cd petsc-3.16.5
-unset PETSC_DIR
-unset PETSC_ARCH
-export PETSC_DIR=$PWD
-export PETSC_ARCH=arch-linux-c-opt
-
-# Configure PETSc
-./configure \
-    CC=mpicc \
-    CXX=mpicxx \
-    FC=mpif90 \
-    --with-debugging=0 \
-    --with-shared-libraries=1 \
-    --with-hypre=1 \
-    --download-hypre=yes \
-    --with-ssl=0 \
-    --with-x=0 \
-    COPTFLAGS='-O3' \
-    CXXOPTFLAGS='-O3' \
-    FOPTFLAGS='-O3'
-
-# Build PETSc
-make all
-make check
-```
-
-## 4. Compile rheoTool
-
-After PETSc is installed, compile rheoTool:
-```bash
-# Set up environment
-source /opt/openfoam9/etc/bashrc
-export PETSC_DIR=~/OpenFOAM/fantaluca-9/ThirdParty/petsc-3.16.5
-export PETSC_ARCH=arch-linux-c-opt
-export LD_LIBRARY_PATH=$PETSC_DIR/$PETSC_ARCH/lib:$LD_LIBRARY_PATH
-
-# Compile rheoTool
-cd ~/OpenFOAM/fantaluca-9/applications/rheoTool/of90/src
-./Allwmake
-```
-
-## 5. Running Simulations
-
-Simply run the present bash file
-```bash
-chmod +x run_simulation.sh
-./run_simulation.sh
-```
-
-## 6. Visualizing Results
-
-To visualize the results:
-´´´bash
-cd PTT_test
-paraFoam
-```
-
-## Troubleshooting
-
-If you encounter problems:
-
-1. Check that all environment variables are correctly set:
-```bash
-echo $WM_PROJECT_DIR
-echo $PETSC_DIR
-echo $PETSC_ARCH
-```
-
-2. Verify that rheoFoam is in your PATH:
-```bash
-which rheoFoam
-```
-
-3. Make sure all libraries are accessible:
-```bash
-ldd $(which rheoFoam)
-```
-
-4. Check for compilation errors in the log files:
-```bash
-tail log.rheoFoam
-```
+- `0/`: Initial conditions
+- `constant/`: Physical properties and mesh configuration
+- `system/`: Simulation control parameters
+  - `blockMeshDict`: Mesh generation settings
+  - `controlDict`: Time control and output settings
+  - `fvSchemes`: Discretization schemes
+  - `fvSolution`: Solution control parameters
+- `Allrun`: Script for running the simulation
+- `Allclean`: Script for cleaning previous results
 
 ## Important Notes
 
-- Always make sure OpenFOAM environment is properly sourced before running simulations
-- PETSc version 3.16.5 is required for this setup
-- Keep environment variables consistent between compilation and execution
-- The script assumes a specific directory structure; adjust paths if your setup differs
+- Make sure the `INPUT_PATH` in `run_foam.sh` points to your simulation directory
+- The default path is `/root/openfoam_data/simulation/fene_p/four_obstacle`
+- All operations are now containerized, eliminating system-specific dependencies
+- Results can be post-processed using ParaView or other VTK-compatible tools
+
+## Visualization
+
+After the simulation completes, results are automatically converted to VTK format for visualization. You can use ParaView or other VTK-compatible tools to analyze the results.
