@@ -1,0 +1,499 @@
++-- tutorials
+    |-- DNS
+    |   +-- dnsFoam
+    |       +-- boxTurb16
+    |-- basic
+    |   |-- PODSolver
+    |   |   |-- 1DPODdiffusion
+    |   |   |-- 1DPODsin
+    |   |   +-- 1DPODstep
+    |   |-- laplacianFoam
+    |   |   |-- Case1.1_mixingPlane_sector_AB_60deg
+    |   |   |-- flange
+    |   |   |-- twoBlocksMixingPlane
+    |   |   +-- twoBlocksMixingPlaneMismatch
+    |   |-- potentialFoam
+    |   |   |-- cylinder
+    |   |   +-- pitzDaily
+    |   |-- scalarTransportFoam
+    |   |   |-- pitzDaily
+    |   |   +-- swirlTest
+    |   +-- sixDOFSolver
+    |       |-- geometricSixDOF
+    |       |-- sixDOFmotion
+    |       +-- springDamper
+    |-- combustion
+    |   |-- XiFoam
+    |   |   |-- les
+    |   |   |   |-- pitzDaily
+    |   |   |   +-- pitzDaily3D
+    |   |   +-- ras
+    |   |       +-- moriyoshiHomogeneous
+    |   |-- dieselFoam
+    |   |   +-- aachenBomb
+    |   |-- engineFoam
+    |   |   +-- kivaTest
+    |   |       |-- -180
+    |   |       |-- constant
+    |   |       |   +-- polyMesh
+    |   |       +-- system
+    |   |-- fireFoam
+    |   |   +-- les
+    |   |       +-- smallPoolFire2D
+    |   +-- reactingFoam
+    |       +-- ras
+    |           +-- counterFlowFlame2D
+    |-- compressible
+    |   |-- dbnsFoam
+    |   |   |-- forwardStep
+    |   |   +-- shockTube
+    |   |-- dbnsTurbFoam
+    |   |   +-- naca0012
+    |   |-- realFluidPisoFoam
+    |   |   +-- ras
+    |   |       |-- backStep
+    |   |       |-- backStep_IAPWS97
+    |   |       |-- cavity_IAPWS97
+    |   |       +-- t-junction
+    |   |-- rhoCentralFoam
+    |   |   |-- LadenburgJet60psi
+    |   |   |-- biconic25-55Run35
+    |   |   |-- forwardStep
+    |   |   |-- obliqueShock
+    |   |   |-- shockTube
+    |   |   +-- wedge15Ma5
+    |   |-- rhoPimpleFoam
+    |   |   +-- angledDuct
+    |   |-- rhoPisoFoam
+    |   |   |-- les
+    |   |   |   +-- pitzDaily
+    |   |   +-- ras
+    |   |       +-- cavity
+    |   |-- rhoPorousMRFPimpleFoam
+    |   |   +-- mixerVessel2D
+    |   |-- rhoPorousSimpleFoam
+    |   |   |-- angledDuctExplicit
+    |   |   |-- angledDuctImplicit
+    |   |   |-- beaverJoseph
+    |   |   +-- porousPlug
+    |   |-- rhoSonicFoam
+    |   |   |-- forwardStep
+    |   |   +-- shockTube
+    |   |-- rhopSonicFoam
+    |   |   |-- shockTube
+    |   |   +-- wedge15Ma5
+    |   |-- sonicFoam
+    |   |   |-- laminar
+    |   |   |   |-- forwardStep
+    |   |   |   +-- shockTube
+    |   |   +-- ras
+    |   |       |-- nacaAirfoil
+    |   |       +-- prism
+    |   |-- sonicLiquidFoam
+    |   |   +-- decompressionTank
+    |   |-- steadyCompressibleFoam
+    |   |   |-- 2bump
+    |   |   +-- transonicBump
+    |   |-- steadyCompressibleMRFFoam
+    |   |   +-- simpleRotorStator
+    |   |-- steadyCompressibleSRFFoam
+    |   |   |-- bentBlade
+    |   |   +-- simpleBlade
+    |   +-- steadyUniversalMRFFoam
+    |       |-- axialTurbineGgiJump
+    |       +-- axialTurbineMixingPlane
+    |-- coupled
+    |   |-- blockCoupledScalarTransportFoam
+    |   |   +-- blockCoupledSwirlTest
+    |   |-- conjugateHeatFoam
+    |   |   +-- conjugateCavity
+    |   +-- conjugateHeatSimpleFoam
+    |       |-- conjugateCavity
+    |       +-- conjugateHeatedSolid
+    |-- discreteMethods
+    |   |-- dsmcFoam
+    |   |   |-- freeSpacePeriodic
+    |   |   |-- freeSpaceStream
+    |   |   |-- supersonicCorner
+    |   |   +-- wedge15Ma5
+    |   +-- molecularDynamics
+    |       |-- mdEquilibrationFoam
+    |       |   |-- periodicCubeArgon
+    |       |   |   |-- constant
+    |       |   |   |   +-- polyMesh
+    |       |   |   +-- system
+    |       |   +-- periodicCubeWater
+    |       |       |-- constant
+    |       |       |   +-- polyMesh
+    |       |       +-- system
+    |       +-- mdFoam
+    |           +-- nanoNozzle
+    |               |-- constant
+    |               |   +-- polyMesh
+    |               +-- system
+    |-- electromagnetics
+    |   |-- electrostaticFoam
+    |   |   +-- chargedWire
+    |   +-- mhdFoam
+    |       +-- hartmann
+    |-- equationReader
+    |   +-- equationReaderDemo
+    |       +-- pitzDaily
+    |-- financial
+    |   +-- financialFoam
+    |       +-- europeanCall
+    |-- finiteArea
+    |   |-- liquidFilmFoam
+    |   |   |-- cylinder
+    |   |   +-- dropsSpreading
+    |   +-- surfactantFoam
+    |       |-- planeTransport
+    |       +-- sphereTransport
+    |           |-- sphereSurfactantFoam
+    |           |   +-- Make
+    |           +-- sphereTransport
+    |-- heatTransfer
+    |   |-- boussinesqBuoyantFoam
+    |   |   +-- heatedCavity
+    |   |-- buoyantBoussinesqPisoFoam
+    |   |   +-- hotRoom
+    |   |-- buoyantBoussinesqSimpleFoam
+    |   |   |-- hotRoom
+    |   |   |-- iglooWithFridges
+    |   |   +-- volumetricHeating
+    |   |-- buoyantPimpleFoam
+    |   |   |-- buoyantChannel
+    |   |   +-- hotRoom
+    |   |-- buoyantSimpleFoam
+    |   |   +-- hotRoom
+    |   |-- buoyantSimpleRadiationFoam
+    |   |   |-- hotRadiationRoom
+    |   |   |-- hotRadiationRoomFvDOM
+    |   |   +-- hotRadiationRoomFvDOMSpecularCeiling
+    |   |-- chtMultiRegionFoam
+    |   |   |-- multiRegionHeater
+    |   |   +-- snappyMultiRegionHeater
+    |   |-- chtMultiRegionSimpleFoam
+    |   |   +-- multiRegionHeater
+    |   |-- setHotRoom
+    |   |   +-- Make
+    |   +-- thermalFoam
+    |       +-- thermalSandwich
+    |-- immersedBoundary
+    |   |-- cylinderInChannelPotential
+    |   |-- cylinderInChannelScalarTransport
+    |   |-- cylinderInSquareLaplace
+    |   |-- movingCylinderInChannelIco
+    |   |-- movingCylinderInChannelIcoFine
+    |   |-- movingCylinderInChannelTurbulent
+    |   |-- pitzDailyLaminar
+    |   |-- pitzDailyTurbulent
+    |   |-- refiningMovingCylinderInChannelIco
+    |   |-- refiningMovingCylinderInChannelTurbulent
+    |   +-- twoIbPatches
+    |-- incompressible
+    |   |-- MRFSimpleFoam
+    |   |   |-- axialTurbine_ggi
+    |   |   |-- axialTurbine_mixingPlane
+    |   |   |-- mixerGgiMRF
+    |   |   +-- mixerVessel2D
+    |   |-- RichardsonFoam
+    |   |   +-- oneDimensionalSoilTransport
+    |   |-- boundaryFoam
+    |   |   |-- boundaryLaunderSharma
+    |   |   |-- boundaryTwoWallsFlowSolution
+    |   |   +-- boundaryWallFunctions
+    |   |-- channelFoam
+    |   |   +-- channel395
+    |   |-- icoDyMFoam
+    |   |   |-- mixer2D
+    |   |   |-- mixerGgi
+    |   |   |-- movingBlockRBF
+    |   |   |-- movingConeMotion
+    |   |   |-- movingConeTopo
+    |   |   +-- turboPassageRotating
+    |   |-- icoFoam
+    |   |   |-- cavity
+    |   |   |-- cavityClipped
+    |   |   |-- cavityGrade
+    |   |   |-- elbow
+    |   |   +-- mixingPlane
+    |   |       |-- twoBlocksMixingPlaneMismatch_dirY_spanZ
+    |   |       |-- twoBlocksMixingPlane_dirY_spanZ
+    |   |       +-- twoBlocksMixingPlane_dirZ_spanY
+    |   |-- nonNewtonianIcoFoam
+    |   |   +-- offsetCylinder
+    |   |-- pUCoupledFoam
+    |   |   |-- backwardFacingStepLaminar
+    |   |   |-- backwardFacingStepTurbulent
+    |   |   +-- cavity
+    |   |-- pimpleDyMFoam
+    |   |   |-- axialTurbine
+    |   |   |   |-- constant
+    |   |   |   |-- save
+    |   |   |   +-- system
+    |   |   |-- mixerGgi3D
+    |   |   |-- movingCone
+    |   |   |-- movingCylinders
+    |   |   +-- wingMotion
+    |   |       |-- wingMotion2D_pimpleDyMFoam
+    |   |       |-- wingMotion2D_simpleFoam
+    |   |       +-- wingMotion_snappyHexMesh
+    |   |           |-- constant
+    |   |           |   +-- triSurface
+    |   |           +-- system
+    |   |-- pimpleFoam
+    |   |   +-- t-junction
+    |   |-- pisoFoam
+    |   |   |-- les
+    |   |   |   |-- pitzDaily
+    |   |   |   +-- pitzDailyDirectMapped
+    |   |   +-- ras
+    |   |       +-- cavity
+    |   |-- porousSimpleFoam
+    |   |   |-- angledDuctExplicit
+    |   |   |-- angledDuctImplicit
+    |   |   |-- beaverJoseph
+    |   |   +-- porousPlug
+    |   |-- shallowWaterFoam
+    |   |   +-- squareBump
+    |   |-- simpleFoam
+    |   |   |-- mixingPlaneAxial
+    |   |   |-- mixingPlaneDomADomB
+    |   |   |-- motorBike
+    |   |   |-- pitzDaily
+    |   |   |-- pitzDaily3Blocks
+    |   |   +-- pitzDailyExptInlet
+    |   +-- simpleSRFFoam
+    |       |-- axialTurbine
+    |       +-- mixer
+    |-- lagrangian
+    |   |-- coalChemistryFoam
+    |   |   +-- simplifiedSiwek
+    |   |-- icoLagrangianFoam
+    |   |   |-- channelParticles
+    |   |   +-- icoLagrangianFoam
+    |   |       +-- Make
+    |   |-- porousExplicitSourceReactingParcelFoam
+    |   |   |-- filter
+    |   |   |-- parcelInBox
+    |   |   +-- verticalChannel
+    |   |-- reactingParcelFoam
+    |   |   +-- evaporationTest
+    |   +-- rhoPisoTwinParcelFoam
+    |       |-- rhoPisoTwinParcelFoam
+    |       |   +-- Make
+    |       +-- simplifiedSiwek
+    |-- mesh
+    |   |-- cfMesh
+    |   |   |-- cartesian2DMesh
+    |   |   |   +-- hatOctree
+    |   |   |-- cartesianMesh
+    |   |   |   |-- asmoOctree
+    |   |   |   |-- bunnyOctree
+    |   |   |   |-- elbow_90degree
+    |   |   |   |-- intakePortOctree
+    |   |   |   |-- multipleOrifices
+    |   |   |   |-- sBendOctree
+    |   |   |   |-- sawOctree
+    |   |   |   |-- ship5415Octree
+    |   |   |   +-- singleOrifice
+    |   |   |-- pMesh
+    |   |   |   |-- bunnyPoly
+    |   |   |   +-- multipleOrifices
+    |   |   +-- tetMesh
+    |   |       |-- cutCubeOctree
+    |   |       +-- socketOctree
+    |   |-- moveDynamicMesh
+    |   |   |-- circCylinder3d
+    |   |   |-- circCylinder3dHex
+    |   |   +-- movingCylinders
+    |   |       |-- constant
+    |   |       +-- system
+    |   +-- snappyHexMesh
+    |-- multiSolver
+    |   +-- multiSolverDemo
+    |       |-- parTeeFitting2d
+    |       |   |-- constant
+    |       |   |   +-- polyMesh
+    |       |   |-- multiSolver
+    |       |   |   |-- icoFoam1
+    |       |   |   |   +-- initial
+    |       |   |   |-- icoFoam2
+    |       |   |   |   +-- initial
+    |       |   |   +-- scalarTransportFoam
+    |       |   |       +-- initial
+    |       |   +-- system
+    |       +-- teeFitting2d
+    |           |-- constant
+    |           |   +-- polyMesh
+    |           |-- multiSolver
+    |           |   |-- icoFoam1
+    |           |   |   +-- initial
+    |           |   |-- icoFoam2
+    |           |   |   +-- initial
+    |           |   +-- scalarTransportFoam
+    |           |       +-- initial
+    |           +-- system
+    |-- multiphase
+    |   |-- MRFInterFoam
+    |   |   +-- mixerVessel2D
+    |   |-- barotropicCavitatingFoam
+    |   |   +-- nozzle
+    |   |-- bubbleFoam
+    |   |   +-- bubbleColumn
+    |   |-- cavitatingFoam
+    |   |   |-- les
+    |   |   |   |-- throttle
+    |   |   |   +-- throttle3D
+    |   |   +-- ras
+    |   |       +-- throttle
+    |   |-- compressibleInterFoam
+    |   |   +-- les
+    |   |       |-- depthCharge2D
+    |   |       +-- depthCharge3D
+    |   |-- interDyMFoam
+    |   |   +-- ras
+    |   |       |-- damBreakWithObstacle
+    |   |       |-- floatingObject
+    |   |       |-- sloshingTank2D
+    |   |       |-- sloshingTank2D3DoF
+    |   |       |-- sloshingTank3D
+    |   |       |-- sloshingTank3D3DoF
+    |   |       +-- sloshingTank3D6DoF
+    |   |-- interFoam
+    |   |   |-- laminar
+    |   |   |   +-- damBreak
+    |   |   |-- les
+    |   |   |   +-- nozzleFlow2D
+    |   |   +-- ras
+    |   |       +-- damBreak
+    |   |-- interMixingFoam
+    |   |   +-- laminar
+    |   |       +-- damBreak
+    |   |-- multiphaseInterFoam
+    |   |   +-- laminar
+    |   |       |-- damBreak4phase
+    |   |       +-- damBreak4phaseFine
+    |   |-- settlingFoam
+    |   |   |-- dahl
+    |   |   +-- tank3D
+    |   +-- twoPhaseEulerFoam
+    |       |-- bed
+    |       |-- bed2
+    |       +-- bubbleColumn
+    |-- overset
+    |   |-- flowTests
+    |   |   |-- channelSimpleOverlapicoOversetFoam
+    |   |   |-- cylinderInChannelicoOversetFoam
+    |   |   |-- oversetCylinderThreeLevels
+    |   |   |-- oversetCylinderThreeLevelssimpleOversetFoam
+    |   |   |-- oversetCylinderTwoLevels
+    |   |   +-- staticCylinderSheddingTest
+    |   |       |-- bodyFittedCylinder
+    |   |       +-- oversetCylinder
+    |   |-- freeSurfaceTests
+    |   |   +-- cylBumpinterOversetFoam
+    |   |-- movingMeshTests
+    |   |   |-- movingCylinderInChannelicoDyMOversetFoam
+    |   |   +-- movingCylinderInChannelpimpleDyMOversetFoam
+    |   |-- parallelTests
+    |   |   |-- NACA4412-ThreeLayerOverlapFringeAssemby-100Processors
+    |   |   +-- channel60CellsOn6Processors
+    |   +-- simpleTests
+    |       |-- channelSimpleOverlapLaplace
+    |       |-- channelSimpleOverlapLaplaceCutAcross
+    |       |-- channelSimpleOverlapLaplaceCutAlong
+    |       |-- channelSimpleOverlapLaplaceCutFringe
+    |       |-- channelSimpleOverlapLaplaceNonInterfering
+    |       |-- channelSimpleOverlapPotentialScalarTransport
+    |       |-- cylinderInChannelPotentialScalarTransport
+    |       |-- cylinderInSquareLaplace
+    |       +-- cylinderInSquareLaplaceAutoFringe
+    |-- solidMechanics
+    |   |-- deprecatedTutorials
+    |   |   |-- contactStressFoam
+    |   |   |   +-- ballAndBrick
+    |   |   |-- icoFsiFoam
+    |   |   |   +-- flappingConsoleSmall
+    |   |   |       |-- fluid
+    |   |   |       +-- solid
+    |   |   |-- newContactStressFoam
+    |   |   |   +-- ballAndBrickFriction
+    |   |   |-- newStressedFoam
+    |   |   |   +-- plateHole
+    |   |   |-- solidDisplacementFoam
+    |   |   |   +-- plateHole
+    |   |   |-- solidEquilibriumDisplacementFoam
+    |   |   |   +-- beamEndLoad
+    |   |   +-- stressedFoam
+    |   |       +-- plateHole
+    |   |-- elasticAcpSolidFoam
+    |   |   |-- crackingBiMatDcbDugdale
+    |   |   |-- crackingBiMatDcbLinear
+    |   |   |-- crackingPlateShearCompress
+    |   |   +-- crackingTriMatDcb
+    |   |-- elasticIncrSolidFoam
+    |   |   |-- incrPlateHole
+    |   |   +-- slidingFrictionBallIncr
+    |   |-- elasticNonLinTLSolidFoam
+    |   |   |-- largeStrainCantileverBeam
+    |   |   |-- nonLinBlock
+    |   |   +-- rotateSphereTL
+    |   |-- elasticNonLinULSolidFoam
+    |   |   |-- rotateSphereUL
+    |   |   +-- timeVaryingPlateHoleNonLinUL
+    |   |-- elasticOrthoNonLinULSolidFoam
+    |   |   +-- pressureRotatePlate
+    |   |-- elasticOrthoSolidFoam
+    |   |   |-- orthotropicBiMatPlate
+    |   |   |-- orthotropicBiMatPlateNonOrtho
+    |   |   +-- orthotropicBlock
+    |   |-- elasticPlasticNonLinTLSolidFoam
+    |   |   +-- timeVaryingPlasticNonLinTLPlateHole
+    |   |-- elasticPlasticNonLinULSolidFoam
+    |   |   +-- timeVaryingPlasticNonLinULPlateHole
+    |   |-- elasticPlasticSolidFoam
+    |   |   |-- rigidBallPlasticBrick
+    |   |   +-- timeVaryingPlasticPlateHole
+    |   |-- elasticSolidFoam
+    |   |   |-- bimaterialPlate
+    |   |   |-- bimaterialPlateNonOrtho
+    |   |   |-- plateHole
+    |   |   |-- slidingFrictionBall
+    |   |   +-- timeVaryingPlateHole
+    |   |-- elasticThermalSolidFoam
+    |   |   +-- hotCylinder
+    |   |-- icoFsiElasticNonLinULSolidFoam
+    |   |   +-- HronTurekFsi
+    |   |       |-- fluid
+    |   |       +-- solid
+    |   |-- stressFemFoam
+    |   |   +-- plateHole
+    |   +-- viscoElasticSolidFoam
+    |       +-- compressionRelaxationTest
+    |-- surfaceTracking
+    |   |-- bubbleInterTrackFoam
+    |   |   +-- bubble2D_r0.75mm
+    |   +-- interTrackFoam
+    |       |-- hydrofoil
+    |       |-- ramp
+    |       |-- sloshing2D
+    |       +-- tank3D
+    +-- viscoelastic
+        +-- viscoelasticFluidFoam
+            |-- DCPP
+            |-- FENE-CR
+            |-- FENE-P
+            |-- Feta-PTT
+            |-- Giesekus
+            |-- Leonov
+            |-- Oldroyd-B
+            |-- PTT-Exponential
+            |-- PTT-Linear
+            |-- S-MDCPP
+            |-- UCM
+            |-- WhiteMetzner
+            |   +-- CarreauYasuda
+            |-- XPP_DE
+            +-- XPP_SE

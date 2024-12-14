@@ -1,0 +1,8 @@
+{
+    "name": "OpenFOAM",
+    "image": "openfoam_extend",
+    "mounts": [
+        "source=${localWorkspaceFolder}/openfoam_data,target=/root/openfoam_data,type=bind"
+    ],
+    "remoteUser": "root"
+}
