@@ -29,7 +29,7 @@ The project now uses Docker with OpenFOAM-extend v5.0 for a more streamlined set
 │   │       └── incompressible
 ├── Dockerfile
 ├── generator_mesh.py
-├── run_foam.sh
+├── run_own_foam.sh
 └── tutorials_tree.txt
 ```
 
@@ -54,11 +54,11 @@ The script automatically updates the `blockMeshDict` file with the new parameter
    ```
 3. Make the run script executable:
    ```bash
-   chmod +x run_foam.sh
+   chmod +x run_own_foam.sh
    ```
 4. Execute the simulation:
    ```bash
-   ./run_foam.sh
+   ./run_own_foam.sh
    ```
 
 The run script handles:
@@ -84,11 +84,35 @@ Each simulation case contains:
 
 ## Important Notes
 
-- Make sure the `INPUT_PATH` in `run_foam.sh` points to your simulation directory
+- Make sure the `INPUT_PATH` in `run_own_foam.sh` points to your simulation directory
 - The default path is `/root/openfoam_data/simulation/fene_p/four_obstacle`
 - All operations are now containerized, eliminating system-specific dependencies
 - Results can be post-processed using ParaView or other VTK-compatible tools
 
 ## Visualization
 
-After the simulation completes, results are automatically converted to VTK format for visualization. You can use ParaView or other VTK-compatible tools to analyze the results.
+After the simulation completes, results are automatically converted to VTK format for visualization.
+
+## Docker Setup
+
+The simulation environment is available as a Docker container, which includes OpenFOAM-extend v5.0 and all necessary dependencies.
+
+### Prerequisites
+
+1. Install Docker on your system: https://docs.docker.com/get-docker/
+
+### Getting Started
+
+1. Pull the OpenFOAM simulation container:
+   ```bash
+   docker pull fantaluca/openfoam-extend:latest
+   ```
+
+2. Run the container with access to your local simulation files:
+   ```bash
+   docker run -it --rm \
+     -v "$(pwd)/openfoam_data:/root/openfoam_data" \
+     fantaluca/openfoam-extend:latest
+   ```
+
+This will give you a ready-to-use environment with all necessary tools installed. You can use ParaView or other VTK-compatible tools to analyze the results.

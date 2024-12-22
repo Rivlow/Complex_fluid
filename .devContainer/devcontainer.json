@@ -2,7 +2,8 @@
     "name": "OpenFOAM",
     "image": "openfoam_extend",
     "mounts": [
-        "source=${localWorkspaceFolder}/openfoam_data,target=/root/openfoam_data,type=bind"
+        "source=${localWorkspaceFolder}/openfoam_container,target=/opt/openfoam_container,type=bind"
     ],
-    "remoteUser": "root"
+    "remoteUser": "root",
+    "runArgs": ["--name", "openfoam_container"]
 }
