@@ -1,9 +1,8 @@
-# main.py
 import os
 from geometry import plot_geometry
 from mesh_analysis import analyze_mesh_convergence
 from convergence import compare_meshes
-from stress_analysis import analyze_stress_distribution, analyze_stress_distribution_comparison
+from stress_analysis import analyze_stress_distribution_comparison
 
 def main():
     base_path = "openfoam_container/output/fene_p/contraction/mesh_variation/all_mesh"
@@ -18,7 +17,7 @@ def main():
     
     # 1. Geometry visualization with coarse mesh
     print("\n=== Visualizing geometry with zones ===")
-    plot_geometry(mesh_files["coarse"], x_limits)
+    #plot_geometry(mesh_files["coarse"], x_limits)
     
     # 2. Mesh convergence analysis
     print("\n=== Analyzing mesh convergence ===")

@@ -1,39 +1,32 @@
-# stress_analysis.py
 import numpy as np
 import pyvista as pv
 import matplotlib.pyplot as plt
 
-def analyze_stress_distribution(vtk_file, x_limits, radius=0.02, plot=False):
+def filter_significant_points(distances, values, n_bins=20):
     """
-    Analyzes stress distribution in a mesh file
-    Returns positions of maximum stress points and their values without plotting
+    Filter points to keep only the maximum values in each distance bin
     """
-    mesh = pv.read(vtk_file)
-    point_data = mesh.cell_data_to_point_data()
+    bins = np.linspace(0, max(distances), n_bins)
+    indices = np.digitize(distances, bins)
     
-    x = -mesh.points[:, 0]
-    y = mesh.points[:, 1]
+    filtered_distances = []
+    filtered_values = []
     
-    tau = point_data['tau']
-    tau_norms = np.linalg.norm(tau, axis=1)
-    N1 = point_data['N1']
+    for i in range(1, len(bins)):
+        mask = indices == i
+        if np.any(mask):
+            # Keep the maximum value in each bin
+            max_idx = np.argmax(values[mask])
+            bin_distances = distances[mask]
+            bin_values = values[mask]
+            filtered_distances.append(bin_distances[max_idx])
+            filtered_values.append(bin_values[max_idx])
     
-    max_tau_idx = np.argmax(tau_norms)
-    max_N1_idx = np.argmax(np.abs(N1))
-    
-    max_tau_pos = np.array([x[max_tau_idx], y[max_tau_idx]])
-    max_N1_pos = np.array([x[max_N1_idx], y[max_N1_idx]])
-    
-    # Print positions of maxima
-    print(f"\nMesh cell count: {mesh.n_cells}")
-    print(f"tau max position: x={max_tau_pos[0]:.3f}, y={max_tau_pos[1]:.3f}")
-    print(f"N1 max position: x={max_N1_pos[0]:.3f}, y={max_N1_pos[1]:.3f}")
-    
-    return max_tau_pos, max_N1_pos, tau_norms[max_tau_idx], np.abs(N1[max_N1_idx])
+    return np.array(filtered_distances), np.array(filtered_values)
 
 def analyze_stress_distribution_comparison(vtk_files, x_limits, radius=0.02):
     """
-    Compares stress distributions between two meshes (typically coarse and fine)
+    Compares stress distributions between two meshes with simplified visualization
     """
     results = []
     for vtk_file in vtk_files:
@@ -74,16 +67,26 @@ def analyze_stress_distribution_comparison(vtk_files, x_limits, radius=0.02):
                           (result['y'] - max_pos[1])**2)
         mask = distances <= radius
         
+        # Filter points for distance plot
+        filtered_distances, filtered_tau = filter_significant_points(
+            distances[mask], result['tau'][mask])
+        
         mesh_type = "Coarse" if i == 0 else "Fine"
-        ax1.scatter(distances[mask], result['tau'][mask], 
-                   alpha=0.3, c=colors[i], marker=markers[i],
+        ax1.scatter(filtered_distances, filtered_tau,
+                   alpha=0.6, c=colors[i], marker=markers[i], s=100,
                    label=f"{mesh_type} mesh ({result['mesh_size']} cells)")
         
-        scatter = ax2.scatter(result['x'][mask], result['y'][mask],
-                            c=result['tau'][mask], cmap='viridis',
-                            marker=markers[i], alpha=0.5)
+        # Keep only points near the maximum for spatial plot
+        near_max_mask = distances <= radius/2  # Reduce radius for clarity
+        scatter = ax2.scatter(result['x'][near_max_mask], 
+                            result['y'][near_max_mask],
+                            c=result['tau'][near_max_mask], 
+                            cmap='viridis',
+                            marker=markers[i], 
+                            alpha=0.7,
+                            s=100)
         ax2.plot(max_pos[0], max_pos[1], '*', color=colors[i],
-                markersize=15, label=f"{mesh_type} max")
+                markersize=20, label=f"{mesh_type} max")
     
     # Plot N1 distributions
     for i, result in enumerate(results):
@@ -92,42 +95,50 @@ def analyze_stress_distribution_comparison(vtk_files, x_limits, radius=0.02):
                           (result['y'] - max_pos[1])**2)
         mask = distances <= radius
         
+        # Filter points for distance plot
+        filtered_distances, filtered_N1 = filter_significant_points(
+            distances[mask], result['N1'][mask])
+        
         mesh_type = "Coarse" if i == 0 else "Fine"
-        ax3.scatter(distances[mask], result['N1'][mask],
-                   alpha=0.3, c=colors[i], marker=markers[i],
+        ax3.scatter(filtered_distances, filtered_N1,
+                   alpha=0.6, c=colors[i], marker=markers[i], s=100,
                    label=f"{mesh_type} mesh ({result['mesh_size']} cells)")
         
-        scatter = ax4.scatter(result['x'][mask], result['y'][mask],
-                            c=result['N1'][mask], cmap='viridis',
-                            marker=markers[i], alpha=0.5)
+        # Keep only points near the maximum for spatial plot
+        near_max_mask = distances <= radius/2  # Reduce radius for clarity
+        scatter = ax4.scatter(result['x'][near_max_mask], 
+                            result['y'][near_max_mask],
+                            c=result['N1'][near_max_mask], 
+                            cmap='viridis',
+                            marker=markers[i], 
+                            alpha=0.7,
+                            s=100)
         ax4.plot(max_pos[0], max_pos[1], '*', color=colors[i],
-                markersize=15, label=f"{mesh_type} max")
+                markersize=20, label=f"{mesh_type} max")
     
-    ax1.set_xlabel('Distance from maximum')
+    # Customize plots
+    for ax in [ax1, ax3]:
+        ax.grid(True, linestyle='--', alpha=0.7)
+        ax.set_xlabel('Distance from maximum')
+        ax.legend()
+        
+    for ax in [ax2, ax4]:
+        ax.grid(True, linestyle='--', alpha=0.7)
+        ax.set_xlabel('X Position')
+        ax.set_ylabel('Y Position')
+        ax.legend()
+    
     ax1.set_ylabel('tau')
-    ax1.set_title('tau vs Distance from Maximum')
-    ax1.grid(True)
-    ax1.legend()
+    ax1.set_title('Maximum tau vs Distance')
     
-    ax2.set_xlabel('X Position')
-    ax2.set_ylabel('Y Position')
-    ax2.set_title('Spatial Distribution of tau')
+    ax2.set_title('Spatial Distribution of tau maxima')
     plt.colorbar(scatter, ax=ax2, label='tau')
-    ax2.grid(True)
-    ax2.legend()
     
-    ax3.set_xlabel('Distance from maximum')
     ax3.set_ylabel('N1')
-    ax3.set_title('N1 vs Distance from Maximum')
-    ax3.grid(True)
-    ax3.legend()
+    ax3.set_title('Maximum N1 vs Distance')
     
-    ax4.set_xlabel('X Position')
-    ax4.set_ylabel('Y Position')
-    ax4.set_title('Spatial Distribution of N1')
+    ax4.set_title('Spatial Distribution of N1 maxima')
     plt.colorbar(scatter, ax=ax4, label='N1')
-    ax4.grid(True)
-    ax4.legend()
     
     plt.tight_layout()
     plt.show()
