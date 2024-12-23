@@ -10,14 +10,14 @@ def safe_max(array):
 
 def analyze_mesh_convergence(vtk_file):
 
-    print(f"Analyse de {vtk_file}...")
+    print(f"Analyse of {vtk_file}...")
     mesh = pv.read(vtk_file)
     point_data = mesh.cell_data_to_point_data()
     
     x = mesh.points[:, 0]
     y = mesh.points[:, 1]
-    print(f"Plage de x: [{x.min():.3f}, {x.max():.3f}]")
-    print(f"Plage de y: [{y.min():.3f}, {y.max():.3f}]")
+    print(f"Range x: [{x.min():.3f}, {x.max():.3f}]")
+    print(f"Range y: [{y.min():.3f}, {y.max():.3f}]")
     
     x_mid = (x.max() + x.min()) / 2
     x_range = x.max() - x.min()
@@ -30,7 +30,7 @@ def analyze_mesh_convergence(vtk_file):
     for name, mask in [("entrance", entrance_mask), 
                       ("contraction", contraction_mask), 
                       ("exit", exit_mask)]:
-        print(f"Points dans la zone {name}: {np.sum(mask)}")
+        print(f"Points in the zone {name}: {np.sum(mask)}")
     
     tau = point_data['tau']
     U = point_data['U']
@@ -53,13 +53,13 @@ def analyze_mesh_convergence(vtk_file):
             metrics[f'{zone_name}_N1_max'] = safe_max(N1_values)
             metrics[f'{zone_name}_U_max'] = safe_max(U_norms)
         else:
-            print(f"Warning: aucun point dans la zone {zone_name}")
+            print(f"Warning: No points in the zone {zone_name}")
             metrics[f'{zone_name}_tau_max'] = 0
             metrics[f'{zone_name}_N1_max'] = 0
             metrics[f'{zone_name}_U_max'] = 0
     
     metrics['total_cells'] = mesh.n_cells
-    print(f"Nombre total de cellules: {metrics['total_cells']}")
+    print(f"Total numbber of cells : {metrics['total_cells']}")
     
     return metrics
 
