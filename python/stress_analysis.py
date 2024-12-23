@@ -1,8 +1,13 @@
+# stress_analysis.py
 import numpy as np
 import pyvista as pv
 import matplotlib.pyplot as plt
 
-def analyze_stress_distribution(vtk_file, x_limits, radius=0.02):
+def analyze_stress_distribution(vtk_file, x_limits, radius=0.02, plot=False):
+    """
+    Analyzes stress distribution in a mesh file
+    Returns positions of maximum stress points and their values without plotting
+    """
     mesh = pv.read(vtk_file)
     point_data = mesh.cell_data_to_point_data()
     
@@ -19,59 +24,17 @@ def analyze_stress_distribution(vtk_file, x_limits, radius=0.02):
     max_tau_pos = np.array([x[max_tau_idx], y[max_tau_idx]])
     max_N1_pos = np.array([x[max_N1_idx], y[max_N1_idx]])
     
-    def analyze_region(center, field, field_name):
-        distances = np.sqrt((x - center[0])**2 + (y - center[1])**2)
-        mask = distances <= radius
-        
-        if not np.any(mask):
-            print(f"No points found within radius for {field_name}")
-            return
-        
-        dist_masked = distances[mask]
-        field_masked = field[mask]
-        sort_idx = np.argsort(dist_masked)
-        
-        plt.figure(figsize=(10, 5))
-        
-        plt.subplot(121)
-        plt.scatter(dist_masked[sort_idx], field_masked[sort_idx], alpha=0.5, s=20)
-        plt.xlabel('Distance from maximum')
-        plt.ylabel(field_name)
-        plt.title(f'{field_name} vs Distance from Maximum')
-        plt.grid(True)
-        
-        plt.subplot(122)
-        plt.scatter(x[mask], y[mask], c=field[mask], cmap='viridis', alpha=0.5)
-        plt.colorbar(label=field_name)
-        plt.plot(center[0], center[1], 'r*', markersize=15, label='Maximum')
-        plt.xlabel('X Position')
-        plt.ylabel('Y Position')
-        plt.title(f'Spatial Distribution of {field_name}')
-        plt.legend()
-        plt.grid(True)
-        
-        plt.tight_layout()
-        plt.show()
-        
-        print(f"\nStatistics for {field_name} in region:")
-        print(f"Maximum value: {np.max(field_masked):.6f}")
-        print(f"Mean value: {np.mean(field_masked):.6f}")
-        print(f"Standard deviation: {np.std(field_masked):.6f}")
-        print(f"Number of points in region: {np.sum(mask)}")
-    
-    print("\nAnalyzing tau distribution:")
-    analyze_region(max_tau_pos, tau_norms, 'tau')
-    
-    print("\nAnalyzing N1 distribution:")
-    analyze_region(max_N1_pos, np.abs(N1), 'N1')
-    
-    print("\nPosition of maxima:")
+    # Print positions of maxima
+    print(f"\nMesh cell count: {mesh.n_cells}")
     print(f"tau max position: x={max_tau_pos[0]:.3f}, y={max_tau_pos[1]:.3f}")
     print(f"N1 max position: x={max_N1_pos[0]:.3f}, y={max_N1_pos[1]:.3f}")
     
-    return max_tau_pos, max_N1_pos
+    return max_tau_pos, max_N1_pos, tau_norms[max_tau_idx], np.abs(N1[max_N1_idx])
 
 def analyze_stress_distribution_comparison(vtk_files, x_limits, radius=0.02):
+    """
+    Compares stress distributions between two meshes (typically coarse and fine)
+    """
     results = []
     for vtk_file in vtk_files:
         mesh = pv.read(vtk_file)
@@ -99,6 +62,7 @@ def analyze_stress_distribution_comparison(vtk_files, x_limits, radius=0.02):
             'max_N1_val': np.abs(N1[max_N1_idx])
         })
     
+    # Create comparison plots
     fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(15, 12))
     colors = ['blue', 'red']
     markers = ['o', 's']
@@ -110,15 +74,16 @@ def analyze_stress_distribution_comparison(vtk_files, x_limits, radius=0.02):
                           (result['y'] - max_pos[1])**2)
         mask = distances <= radius
         
+        mesh_type = "Coarse" if i == 0 else "Fine"
         ax1.scatter(distances[mask], result['tau'][mask], 
                    alpha=0.3, c=colors[i], marker=markers[i],
-                   label=f"Mesh size: {result['mesh_size']}")
+                   label=f"{mesh_type} mesh ({result['mesh_size']} cells)")
         
         scatter = ax2.scatter(result['x'][mask], result['y'][mask],
                             c=result['tau'][mask], cmap='viridis',
                             marker=markers[i], alpha=0.5)
         ax2.plot(max_pos[0], max_pos[1], '*', color=colors[i],
-                markersize=15, label=f"Max ({result['mesh_size']} cells)")
+                markersize=15, label=f"{mesh_type} max")
     
     # Plot N1 distributions
     for i, result in enumerate(results):
@@ -127,15 +92,16 @@ def analyze_stress_distribution_comparison(vtk_files, x_limits, radius=0.02):
                           (result['y'] - max_pos[1])**2)
         mask = distances <= radius
         
+        mesh_type = "Coarse" if i == 0 else "Fine"
         ax3.scatter(distances[mask], result['N1'][mask],
                    alpha=0.3, c=colors[i], marker=markers[i],
-                   label=f"Mesh size: {result['mesh_size']}")
+                   label=f"{mesh_type} mesh ({result['mesh_size']} cells)")
         
         scatter = ax4.scatter(result['x'][mask], result['y'][mask],
                             c=result['N1'][mask], cmap='viridis',
                             marker=markers[i], alpha=0.5)
         ax4.plot(max_pos[0], max_pos[1], '*', color=colors[i],
-                markersize=15, label=f"Max ({result['mesh_size']} cells)")
+                markersize=15, label=f"{mesh_type} max")
     
     ax1.set_xlabel('Distance from maximum')
     ax1.set_ylabel('tau')
@@ -168,7 +134,8 @@ def analyze_stress_distribution_comparison(vtk_files, x_limits, radius=0.02):
     
     # Print comparison statistics
     print("\nComparison Statistics:")
-    for result in results:
-        print(f"\nMesh size: {result['mesh_size']} cells")
+    for i, result in enumerate(results):
+        mesh_type = "Coarse" if i == 0 else "Fine"
+        print(f"\n{mesh_type} mesh ({result['mesh_size']} cells)")
         print(f"tau max: {result['max_tau_val']:.6f} at x={result['max_tau_pos'][0]:.6f}, y={result['max_tau_pos'][1]:.6f}")
         print(f"N1 max: {result['max_N1_val']:.6f} at x={result['max_N1_pos'][0]:.6f}, y={result['max_N1_pos'][1]:.6f}")

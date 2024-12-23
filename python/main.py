@@ -30,15 +30,7 @@ def main():
     ]
     compare_meshes(ordered_meshes, x_limits)
     
-    # 3. Detailed stress analysis for extreme meshes
-    print("\n=== Detailed stress analysis ===")
-    print("\nAnalyzing coarse mesh:")
-    coarse_pos = analyze_stress_distribution(mesh_files["coarse"], x_limits)
-    
-    print("\nAnalyzing fine mesh:")
-    fine_pos = analyze_stress_distribution(mesh_files["fine"], x_limits)
-    
-    # 4. Stress distribution comparison
+    # 3. Compare stress distributions between coarse and fine meshes
     print("\n=== Stress distribution comparison between coarse and fine meshes ===")
     analyze_stress_distribution_comparison(
         [mesh_files["coarse"], mesh_files["fine"]], 
