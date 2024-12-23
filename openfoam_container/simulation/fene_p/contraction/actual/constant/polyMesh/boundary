@@ -20,27 +20,27 @@ FoamFile
     outlet
     {
         type            patch;
-        nFaces          160;
-        startFace       146400;
+        nFaces          133;
+        startFace       100057;
     }
     fixedWalls
     {
         type            wall;
-        nFaces          1400;
-        startFace       146560;
+        nFaces          1152;
+        startFace       100190;
         closedSolidBodyMotion false;
     }
     inlet
     {
         type            patch;
-        nFaces          40;
-        startFace       147960;
+        nFaces          33;
+        startFace       101342;
     }
     frontAndBack
     {
         type            empty;
-        nFaces          147200;
-        startFace       148000;
+        nFaces          100716;
+        startFace       101375;
     }
 )
 

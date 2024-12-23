@@ -1,41 +1,39 @@
+from process_data import *
+from geometry import *
+from vorticity import *
+from convergence import *
 import os
-from geometry import plot_geometry
-from mesh_analysis import analyze_mesh_convergence
-from convergence import compare_meshes
-from stress_analysis import analyze_stress_distribution_comparison
+import numpy as np
+import matplotlib.pyplot as plt
 
 def main():
-    base_path = "openfoam_container/output/fene_p/contraction/mesh_variation/all_mesh"
-    x_limits = (-0.3, -0.29, -0.1, -0.001)
+
+    base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    output_path = os.path.join(base_path, 'openfoam_container', 'output', 
+                              'fene_p', 'contraction', 'mesh_variation')
     
     mesh_files = {
-        "fine": f"{base_path}/mesh_1_1.vtk",
-        "medium_fine": f"{base_path}/mesh_3_4.vtk",
-        "medium": f"{base_path}/mesh_2_3.vtk",
-        "coarse": f"{base_path}/mesh_1_2.vtk"
+        'mesh_coarse': os.path.join(output_path, 'mesh_1_2'),
+        'mesh_medium_low': os.path.join(output_path, 'mesh_2_3'),
+        'mesh_medium_mid': os.path.join(output_path, 'mesh_3_4'),
+        'mesh_medium_top': os.path.join(output_path, 'mesh_4_5'),
+        'mesh_fine': os.path.join(output_path, 'mesh_1_1'),
+        'mesh_best': os.path.join(output_path, 'mesh_11_10'),
     }
     
-    # 1. Geometry visualization with coarse mesh
-    print("\n=== Visualizing geometry with zones ===")
-    #plot_geometry(mesh_files["coarse"], x_limits)
+
+    # Plot vorticity + geometry
+    expansion_bounds = (0.2, 0.3)
+    best_mesh_data = load_vtk_data(os.path.join(output_path, 'mesh_11_10'))
+    plot_geometry(best_mesh_data, expansion_bounds)
+    plot_vorticity_field(best_mesh_data['points'], best_mesh_data['U'])
     
-    # 2. Mesh convergence analysis
-    print("\n=== Analyzing mesh convergence ===")
-    ordered_meshes = [
-        mesh_files["coarse"],
-        mesh_files["medium"],
-        mesh_files["medium_fine"],
-        mesh_files["fine"]
-    ]
-    compare_meshes(ordered_meshes, x_limits)
+    # Convergence
+    mesh_data = load_all_meshes(mesh_files)
+    results = analyze_mesh_convergence(mesh_data)
+    plot_convergence_metrics(results)
     
-    # 3. Compare stress distributions between coarse and fine meshes
-    print("\n=== Stress distribution comparison between coarse and fine meshes ===")
-    analyze_stress_distribution_comparison(
-        [mesh_files["coarse"], mesh_files["fine"]], 
-        x_limits,
-        radius=0.02
-    )
+    
 
 if __name__ == "__main__":
     main()

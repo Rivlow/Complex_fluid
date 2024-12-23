@@ -1,13 +1,62 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pyvista as pv
+import os
 
+def find_vtk_file(folder_path):
 
-def get_zone_boundaries(x, y, x_start, x_end):
-    """Get upper and lower y boundaries for a zone between x_start and x_end"""
+    for file in os.listdir(folder_path):
+        if file.endswith('.vtk'):
+            return os.path.join(folder_path, file)
+    return None
+
+def get_channel_boundaries(points):
+    
+    x = points[:,0]
+    y = points[:,1]
+    
+    n_bins = 50
+    x_bins = np.linspace(x.max(), x.min(), n_bins)
+    bin_heights = []
+    bin_centers = []
+    
+    for i in range(len(x_bins)-1):
+        mask = (x <= x_bins[i]) & (x > x_bins[i+1])
+        if np.sum(mask) > 0:
+            y_slice = y[mask]
+            height = y_slice.max() - y_slice.min()
+            bin_heights.append(height)
+            bin_centers.append((x_bins[i] + x_bins[i+1])/2)
+            
+    heights = np.array(bin_heights)
+    x_centers = np.array(bin_centers)
+    
+    height_ratios = heights[1:]/heights[:-1]
+    transition_idx = np.argmax(np.abs(height_ratios - 1))
+    
+    inlet_heights = heights[:transition_idx]
+    outlet_heights = heights[transition_idx+1:]
+    
+    small_height = np.mean(inlet_heights)
+    large_height = np.mean(outlet_heights)
+    x_transition = x_centers[transition_idx]
+    
+    return {
+        'small_height': small_height,
+        'large_height': large_height,
+        'transition_x': x_transition,
+        'expansion_ratio': large_height/small_height
+    }
+
+def get_zone_boundaries(x, y, x_start, x_end, debug=False):
+    
+
     mask = (x >= x_start) & (x <= x_end)
+    
     if not np.any(mask):
-        return [], []
+        if debug:
+            print("No points found in zone!")
+        return np.array([]), np.array([]), np.array([])
     
     x_zone = x[mask]
     y_zone = y[mask]
@@ -16,52 +65,61 @@ def get_zone_boundaries(x, y, x_start, x_end):
     x_zone = x_zone[sort_idx]
     y_zone = y_zone[sort_idx]
     
-    x_unique = np.unique(x_zone)
-    y_upper = []
-    y_lower = []
+    x_unique, indices = np.unique(x_zone, return_inverse=True)
+    y_upper = np.zeros_like(x_unique)
+    y_lower = np.zeros_like(x_unique)
     
-    for x_pos in x_unique:
-        mask_x = x_zone == x_pos
-        y_upper.append(np.max(y_zone[mask_x]))
-        y_lower.append(np.min(y_zone[mask_x]))
-    
-    return x_unique, np.array(y_upper), np.array(y_lower)
+    for i in range(len(x_unique)):
+        mask_x = indices == i
+        y_vals = y_zone[mask_x]
+        y_upper[i] = np.max(y_vals)
+        y_lower[i] = np.min(y_vals)
+        
+    return x_unique, y_upper, y_lower
 
-def plot_geometry(vtk_file, x_limits):
-    mesh = pv.read(vtk_file)
-    points = mesh.points
-    x = -points[:, 0]
+def plot_geometry(mesh_data, expansion_bounds):
+    points = mesh_data['points']
+    x = points[:, 0]
     y = points[:, 1]
     
-    plt.figure(figsize=(12, 6))
-    
-    colors = {
-        'entrance': 'blue',
-        'expansion': 'red',
-        'exit': 'green'
-    }
-    
-    x_entrance_end, x_expansion_start, x_expansion_end, x_exit_start = x_limits
-    
-    for zone_name, (start, end) in [
-        ('entrance', (x.min(), x_expansion_start)),
-        ('expansion', (x_expansion_start, x_expansion_end)),
-        ('exit', (x_expansion_end, x.max()))
-    ]:
-        x_zone, y_upper, y_lower = get_zone_boundaries(x, y, start, end)
-        plt.fill_between(x_zone, y_lower, y_upper,
-                        color=colors[zone_name], alpha=0.3, label=f'{zone_name} zone')
-    
+    plt.figure(figsize=(12, 4))
     plt.scatter(x, y, s=1, alpha=0.1, color='black')
-    plt.grid(True)
+    
+    geometry = get_channel_boundaries(points)
+    x_transition = geometry['transition_x']
+    
+    x_entry = expansion_bounds[1]  
+    x_exit = expansion_bounds[0]  
+    
+    x_coords = np.linspace(x.min(), x.max(), 100)
+    y_small = geometry['small_height']/2
+    y_large = geometry['large_height']/2
+    
+    # Entry zone (x > 0.3)
+    mask_entry = x_coords >= x_entry
+    plt.fill_between(x_coords[mask_entry], 
+                    -y_small, y_small,
+                    alpha=0.2, color='blue', label='Entry zone')
+    
+    # Expansion zone (0.2 <= x <= 0.3)
+    mask_exp = (x_coords >= x_exit) & (x_coords < x_entry)
+    plt.fill_between(x_coords[mask_exp],
+                    -np.interp(x_coords[mask_exp], [x_exit, x_entry], [y_large, y_small]),
+                    np.interp(x_coords[mask_exp], [x_exit, x_entry], [y_large, y_small]),
+                    alpha=0.2, color='green', label='Expansion zone')
+    
+    # Exit zone (x < 0.2)
+    mask_exit = x_coords < x_exit
+    plt.fill_between(x_coords[mask_exit],
+                    -y_large, y_large,
+                    alpha=0.2, color='red', label='Exit zone')
+    
+    plt.grid(True, alpha=0.3)
     plt.xlabel('X Position')
     plt.ylabel('Y Position')
-    plt.title('Geometry Visualization with Zones')
-    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
-    
-    print(f"Domain bounds:")
-    print(f"X: [{x.min():.3f}, {x.max():.3f}]")
-    print(f"Y: [{y.min():.3f}, {y.max():.3f}]")
-    
+    plt.title('Flow Geometry')
+    plt.legend()
+    plt.axis('equal')
     plt.tight_layout()
     plt.show()
+
