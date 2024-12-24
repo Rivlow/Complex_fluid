@@ -1,0 +1,13 @@
+
+Convergence Analysis Results
+--------------------------------------------------------------------------------
+  Vortex     Metric     Order       Extrap     GCI (%)  
+--------------------------------------------------------------------------------
+    1         X_r        inf        0.018        nan    
+    1        psi_r     -28.821      0.002        0.00   
+    2         X_r        inf        0.092        nan    
+    2        psi_r       inf        0.002        nan    
+    3         X_r        inf        0.000        nan    
+    3        psi_r       inf        0.002        nan    
+    4         X_r        inf        0.000        nan    
+    4        psi_r       inf        0.002        nan    

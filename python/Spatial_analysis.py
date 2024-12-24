@@ -6,11 +6,12 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 def main():
 
     base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     output_path = os.path.join(base_path, 'openfoam_container', 'output', 
-                              'fene_p', 'contraction', 'mesh_variation')
+                              'fene_p', 'expansion', 'mesh_variation')
     
     mesh_files = {
         'mesh_coarse': os.path.join(output_path, 'mesh_1_2'),
@@ -24,14 +25,23 @@ def main():
 
     # Plot vorticity + geometry
     expansion_bounds = (0.2, 0.3)
-    best_mesh_data = load_vtk_data(os.path.join(output_path, 'mesh_11_10'))
-    plot_geometry(best_mesh_data, expansion_bounds)
-    plot_vorticity_field(best_mesh_data['points'], best_mesh_data['U'])
+    best_mesh = load_vtk_data(os.path.join(output_path, 'mesh_11_10'))
+    #plot_geometry(best_mesh, expansion_bounds)
+    plot_vorticity_field(best_mesh['points'], best_mesh['U'], save=True, prefix='python/figures/plot_')
     
-    # Convergence
-    mesh_data = load_all_meshes(mesh_files)
-    results = analyze_mesh_convergence(mesh_data)
-    plot_convergence_metrics(results)
+    # Convergence plots : velocity, vorticity and stress (xx, xy, yy)
+    #mesh_data = load_all_meshes(mesh_files)
+    #stats = plot_convergence(mesh_data, save=True, prefix='python/figures/convergence_')
+
+    # Convergence with Richardson extrapolation
+    #results = analyze_mesh_convergence(mesh_data)
+    #print_convergence_results(results, output_file="convergence_results.txt")
+
+  
+    
+
+    
+    
     
     
 

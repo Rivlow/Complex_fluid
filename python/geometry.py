@@ -11,27 +11,27 @@ def find_vtk_file(folder_path):
     return None
 
 def get_channel_boundaries(points):
-    
     x = points[:,0]
     y = points[:,1]
     
     n_bins = 50
     x_bins = np.linspace(x.max(), x.min(), n_bins)
-    bin_heights = []
-    bin_centers = []
+    bin_heights = np.zeros(n_bins-1)
+    bin_centers = np.zeros(n_bins-1)
     
     for i in range(len(x_bins)-1):
         mask = (x <= x_bins[i]) & (x > x_bins[i+1])
-        if np.sum(mask) > 0:
+        if np.any(mask):
             y_slice = y[mask]
-            height = y_slice.max() - y_slice.min()
-            bin_heights.append(height)
-            bin_centers.append((x_bins[i] + x_bins[i+1])/2)
-            
-    heights = np.array(bin_heights)
-    x_centers = np.array(bin_centers)
+            bin_heights[i] = y_slice.max() - y_slice.min()
+            bin_centers[i] = (x_bins[i] + x_bins[i+1])/2
     
-    height_ratios = heights[1:]/heights[:-1]
+    # Remove bins with zero height
+    valid_bins = bin_heights > 0
+    heights = bin_heights[valid_bins]
+    x_centers = bin_centers[valid_bins]
+    
+    height_ratios = heights[1:] / heights[:-1]
     transition_idx = np.argmax(np.abs(height_ratios - 1))
     
     inlet_heights = heights[:transition_idx]
@@ -43,11 +43,10 @@ def get_channel_boundaries(points):
     
     return {
         'small_height': small_height,
-        'large_height': large_height,
+        'large_height': large_height, 
         'transition_x': x_transition,
-        'expansion_ratio': large_height/small_height
+        'expansion_ratio': large_height / small_height
     }
-
 def get_zone_boundaries(x, y, x_start, x_end, debug=False):
     
 

@@ -2,17 +2,33 @@ import pyvista as pv
 import numpy as np
 import os
 
-def load_vtk_data(base_folder):
-    for file in os.listdir(base_folder):
-        if file.endswith('.vtk'):
-            mesh = pv.read(os.path.join(base_folder, file))
-            point_data = mesh.cell_data_to_point_data()
-            
-            return {
-                'points': mesh.points,
-                'U': point_data['U']
-            }
-    raise FileNotFoundError(f'No .vtk file found in {base_folder}')
+def load_vtk_data(base_folder, verbose=False):
+
+    vtk_files = [f for f in os.listdir(base_folder) if f.endswith('.vtk')]
+    if not vtk_files:
+        raise FileNotFoundError(f"No VTK file found in {base_folder}")
+    
+    # nb : find only first vtk file !
+    vtk_path = os.path.join(base_folder, vtk_files[0])
+    mesh = pv.read(vtk_path)
+    
+    data = {'points': mesh.points}
+    
+    for name in mesh.point_data:
+        data[name] = mesh.point_data[name]
+    
+    if verbose:
+        print("\nLoaded VTK Data:")
+        print("=" * 50)
+        print(f"File: {vtk_files[0]}")
+        print(f"Points: shape={mesh.points.shape}, dtype={mesh.points.dtype}")
+        print("\nPoint data arrays:")
+        for name in mesh.point_data:
+            array = mesh.point_data[name]
+            print(f"  {name}: shape={array.shape}, dtype={array.dtype}")
+    
+    return data
+
 
 def load_all_meshes(mesh_folders):
     return {
