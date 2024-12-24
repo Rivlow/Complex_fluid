@@ -24,7 +24,7 @@ def main():
     
 
     # Plot vorticity + geometry
-    expansion_bounds = (0.2, 0.3)
+    expansion_bounds = (0.05, 0.3)
     best_mesh = load_vtk_data(os.path.join(output_path, 'mesh_11_10'))
     #plot_geometry(best_mesh, expansion_bounds)
     plot_vorticity_field(best_mesh['points'], best_mesh['U'], save=True, prefix='python/figures/plot_')
@@ -37,13 +37,6 @@ def main():
     #results = analyze_mesh_convergence(mesh_data)
     #print_convergence_results(results, output_file="convergence_results.txt")
 
-  
-    
-
-    
-    
-    
-    
 
 if __name__ == "__main__":
     main()

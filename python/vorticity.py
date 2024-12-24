@@ -234,58 +234,55 @@ def calculate_vortex_intensity(points, U, center_point):
     return np.max(np.abs(psi))
 
 
-def plot_vorticity_field(points, U, save, prefix):
+def plot_vorticity_field(points, U, save=False, prefix=''):
 
     analyzer = AdaptiveVortexAnalysis(points, U)
     vorticity, (X, Y, vort_grid) = analyzer.calculate_vorticity()
     geometry = analyzer.geometry
     x_transition = geometry['transition_x']
     
-    plt.figure(figsize=(12, 4))
+    fig = plt.figure(figsize=(12, 4))
     plt.pcolormesh(X, Y, vort_grid, cmap='RdBu_r', 
                   shading='auto', 
-                  vmin=-10, vmax=10)
+                  vmin=-15, vmax=15)
     
-    # Optimized grid creation
-    nx, ny = 2000, 1000
+    # Reduced grid density for smoother plotting
+    nx, ny = 100, 50
     margin_x = (X.max() - X.min()) * 0.05
     margin_y = (Y.max() - Y.min()) * 0.05
     
-    x_stream = np.linspace(X.min() + margin_x, X.max() - margin_x, nx)
+    # Define expansion zone limits
+    x_exp_start = 0.05
+    x_exp_end = 0.3
+    
+    # Create grid only for expansion zone
+    x_stream = np.linspace(x_exp_start, x_exp_end, nx)
     y_stream = np.linspace(Y.min() + margin_y, Y.max() - margin_y, ny)
     X_stream, Y_stream = np.meshgrid(x_stream, y_stream)
     
-    # Vectorized channel mask
+    # Channel mask for expansion zone
     channel_mask = ((X_stream >= x_transition) & (np.abs(Y_stream) <= geometry['small_height']/2)) | \
                   ((X_stream < x_transition) & (np.abs(Y_stream) <= geometry['large_height']/2))
     
-    # Interpolate velocities in one pass
+    # Velocity interpolation
     points_2d = np.column_stack((points[:,0], points[:,1]))
     U_x = griddata(points_2d, U[:,0], (X_stream, Y_stream))
     U_y = griddata(points_2d, U[:,1], (X_stream, Y_stream))
     U_x[~channel_mask] = np.nan
     U_y[~channel_mask] = np.nan
     
-    # Optimized start points generation
-    x_mesh, y_mesh = np.meshgrid(x_stream, y_stream)
-    valid_x = (x_mesh >= X.min() + margin_x) & (x_mesh <= X.max() - margin_x)
-    valid_y = (y_mesh >= Y.min() + margin_y) & (y_mesh <= Y.max() - margin_y)
-    
-    x_step = np.where((x_mesh[0] >= 0.1) & (x_mesh[0] <= 0.3), 4, 12)
+    # Simple uniform grid of starting points
+    x_step = 4
     y_step = 4
     
-    valid_points = valid_x & valid_y & \
-                  ((x_mesh >= x_transition) & (np.abs(y_mesh) <= geometry['small_height']/2 - margin_y) | \
-                   (x_mesh < x_transition) & (np.abs(y_mesh) <= geometry['large_height']/2 - margin_y))
+    x_indices = np.arange(nx)[::x_step]
+    y_indices = np.arange(ny)[::y_step]
     
-    x_indices = np.arange(nx)
-    y_indices = np.arange(ny)
-    x_valid = x_indices[np.mod(x_indices, x_step) == 0]  
-    y_valid = y_indices[np.mod(y_indices, y_step) == 0]
+    X_start, Y_start = np.meshgrid(x_stream[x_indices], y_stream[y_indices])
+    valid_points = ((X_start >= x_transition) & (np.abs(Y_start) <= geometry['small_height']/2)) | \
+                  ((X_start < x_transition) & (np.abs(Y_start) <= geometry['large_height']/2))
     
-    X_start, Y_start = np.meshgrid(x_stream[x_valid], y_stream[y_valid])
-    mask = valid_points[np.ix_(y_valid, x_valid)]
-    start_points = np.column_stack((X_start[mask], Y_start[mask]))
+    start_points = np.column_stack((X_start[valid_points], Y_start[valid_points]))
     
     if len(start_points) > 0:
         plt.streamplot(x_stream, y_stream, U_x, U_y,
@@ -294,13 +291,18 @@ def plot_vorticity_field(points, U, save, prefix):
                       arrowsize=0.5,
                       start_points=start_points)
     
-    
     plt.xlabel('X Position')
     plt.ylabel('Y Position')
-    plt.axis('equal')
+    
+    # Set axis properties and limits
+    ax = plt.gca()
+    ax.set_xlim(-0.05, 0.4)
+    ax.set_ylim(-0.025, 0.025)
+    
     plt.grid(True, alpha=0.2)
     plt.tight_layout()
-
+    
     if save:
-        plt.savefig(f"{prefix}vorticity.png")
+        plt.savefig(f"{prefix}vorticity_field.png", dpi=300, bbox_inches='tight')
+    
     plt.show()
