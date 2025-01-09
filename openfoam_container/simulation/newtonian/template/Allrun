@@ -1,0 +1,29 @@
+#!/bin/sh
+
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+
+export OMPI_ALLOW_RUN_AS_ROOT=1
+export OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
+
+application=pimpleFoam
+
+echo "Running blockMesh application"
+runApplication blockMesh
+
+echo "Running checkMesh application"
+runApplication checkMesh
+
+echo "Decomposing domain"
+runApplication decomposePar
+
+#echo "Running potentialFoam application"
+#runParallel potentialFoam 4
+
+echo "Running simpleFoam solver"
+runParallel $application 4
+
+echo "Reconstructing solution"
+runApplication reconstructPar -latestTime
+
+
+echo "done!"

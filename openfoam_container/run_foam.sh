@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Define paths
-TEMPLATE_PATH="/opt/openfoam_container/simulation/fene_p/contraction/template"
-ACTUAL_PATH="/opt/openfoam_container/simulation/fene_p/contraction/actual"
+TEMPLATE_PATH="/opt/openfoam_container/simulation/newtonian/template"
+ACTUAL_PATH="/opt/openfoam_container/simulation/newtonian/actual"
 
 # Start time measurement
 start_time=$(date +%s)
