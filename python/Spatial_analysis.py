@@ -33,9 +33,6 @@ def main():
     #mesh_data = load_all_meshes(mesh_files)
     #stats = plot_convergence(mesh_data, save=True, prefix='python/figures/convergence_')
 
-    # Convergence with Richardson extrapolation
-    #results = analyze_mesh_convergence(mesh_data)
-    #print_convergence_results(results, output_file="convergence_results.txt")
 
 
 if __name__ == "__main__":

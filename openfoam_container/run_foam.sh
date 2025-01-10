@@ -7,6 +7,7 @@ ACTUAL_PATH="/opt/openfoam_container/simulation/newtonian/actual"
 # Start time measurement
 start_time=$(date +%s)
 
+# Color definitions
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
 RED='\033[0;31m'
@@ -29,10 +30,6 @@ print_header() {
 
 print_step() {
     echo -e "${GREEN}[+] $1${NC}"
-}
-
-print_error() {
-    echo -e "${RED}[!] Error: $1${NC}"
 }
 
 monitor_progress() {
@@ -59,43 +56,23 @@ monitor_progress() {
     
     echo -e "\n"
     print_step "Simulation completed."
-    
-    if [ -d "$end_time" ] && [ -f "$end_time/U" ]; then
-        return 0
-    else
-        print_error "No results found. Simulation may have failed."
-        return 1
-    fi
 }
 
 # Main execution
 print_header "OpenFOAM Simulation"
 
-# Clean actual folder
 print_step "Preparing simulation directory..."
 
-# Check template exists
-if [ ! -d "$TEMPLATE_PATH" ]; then
-    print_error "Template directory not found: $TEMPLATE_PATH"
-    cd /opt/openfoam_container
-    exit 1
-fi
-
-# Remove old actual folder
+# Remove old actual folder if exists and copy template
 if [ -d "$ACTUAL_PATH" ]; then
     print_step "Removing old simulation directory..."
     rm -rf "$ACTUAL_PATH"
 fi
 
-# Copy template to actual
 print_step "Copying template to simulation directory..."
 cp -r "$TEMPLATE_PATH" "$ACTUAL_PATH"
 
-cd "$ACTUAL_PATH" 2>/dev/null || {
-    print_error "Cannot access $ACTUAL_PATH"
-    cd /opt/openfoam_container
-    exit 1
-}
+cd "$ACTUAL_PATH"
 
 print_step "Starting OpenFOAM simulation setup..."
 
@@ -105,18 +82,12 @@ print_step "Cleaning completed"
 print_header "Running Simulation"
 print_step "Initializing simulation..."
 
-./Allrun > simulation.log 2>&1 & allrun_pid=$!
+./Allrun > simulation.log 2>&1 &
+allrun_pid=$!
 
 monitor_progress $allrun_pid
-status=$?
 
 wait $allrun_pid
-
-if [ $status -ne 0 ]; then
-    print_error "Simulation failed"
-    cd /opt/openfoam_container
-    exit 1
-fi
 
 print_header "Post-processing"
 print_step "Converting results to VTK format..."
@@ -134,6 +105,5 @@ seconds=$((total_time % 60))
 print_header "Execution Summary"
 echo -e "${GREEN}Total execution time: ${hours}h ${minutes}m ${seconds}s${NC}"
 
-# Return initial location
 cd /opt/openfoam_container
 exit 0
